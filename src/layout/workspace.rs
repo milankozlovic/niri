@@ -1700,7 +1700,7 @@ impl<W: LayoutElement> Workspace<W> {
             );
         }
 
-        for (tile, tile_pos, _visible) in self.tiles_with_render_positions() {
+        for (tile, tile_pos, visible) in self.tiles_with_render_positions() {
             if Some(tile.window().id()) != move_win_id {
                 assert_eq!(tile.interactive_move_offset, Point::from((0., 0.)));
             }
@@ -1710,6 +1710,12 @@ impl<W: LayoutElement> Workspace<W> {
             // Tile positions must be rounded to physical pixels.
             assert_abs_diff_eq!(tile_pos.x, rounded_pos.x, epsilon = 1e-5);
             assert_abs_diff_eq!(tile_pos.y, rounded_pos.y, epsilon = 1e-5);
+
+            if let Some(anim) = &tile.alpha_animation {
+                if visible {
+                    assert_eq!(anim.to(), 1., "visible tiles can animate alpha only to 1");
+                }
+            }
         }
     }
 }
